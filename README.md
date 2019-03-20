@@ -39,11 +39,11 @@ const (
 func main {
 	Randstr := "from front end"
 	Ticket := "from front end"
-	clientIP := "client IP"
+	ClientIP := "client IP"
 
 	// do qcloud captcha verify
 	captcha := qcloud.NewCaptcha(QcloudCaptchaAid, QcloudCaptchaKey)
-	if ok, err := captcha.Verify(Randstr, Ticket, clientIP); err != nil || !ok {
+	if ok, err := captcha.Verify(Randstr, Ticket, ClientIP); err != nil || !ok {
 		log.Println(err)
 		return
 	}
