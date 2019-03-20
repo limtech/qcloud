@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 
 	"github.com/limtech/utils"
 )
@@ -60,7 +59,6 @@ func (self *Captcha) Verify(randstr, ticket, ip string) (bool, error) {
 	rs := CaptchaVerifyResult{}
 	// http request
 	content, err := utils.HttpGet(url)
-	log.Println(string(content))
 	if err != nil {
 		return false, err
 	}
