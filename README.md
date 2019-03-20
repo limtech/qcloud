@@ -1,15 +1,16 @@
 
-### qcloud sms sdk for golang
+# QCloud SDK for golang
 
+### send sms
 ```go
 import "github.com/limtech/qcloud"
 
 func main {
-    qCloudSDKAppID := ""
-    qCloudAppKey := ""
+    QCloudSDKAppID := ""
+    QCloudAppKey := ""
     mobile := "13912345678"
 
-	sms := qcloud.NewSms(qCloudSDKAppID, qCloudAppKey)
+	sms := qcloud.NewSms(QCloudSDKAppID, QCloudAppKey)
 	action, err := sms.Send(
 		mobile,
 		[]string{"注册", "1234", "10"}, // 您的{1}验证码是{2}，请于{3}分钟内填写。如非本人操作，请忽略本短信。
@@ -23,4 +24,29 @@ type Sms struct{ ... }
     func NewSms(appid string, appkey string) *Sms
 type SmsConfig struct{ ... }
 type SmsResult struct{ ... }
+```
+
+### captcha
+
+```go
+import "github.com/limtech/qcloud"
+
+const (
+	QcloudCaptchaAid string = "1234567890" // change to your own
+	QcloudCaptchaKey string = "xxxxxxxxxx" // change to your own
+)
+
+func main {
+	Randstr := "from front end"
+	Ticket := "from front end"
+	clientIP := "client IP"
+
+	// do qcloud captcha verify
+	captcha := qcloud.NewCaptcha(QcloudCaptchaAid, QcloudCaptchaKey)
+	verifyResult, err := captcha.Verify(Randstr, Ticket, clientIP)
+	if err != nil || verifyResult.Response != 1 {
+		log.Println(err)
+		return
+	}
+}
 ```
