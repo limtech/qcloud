@@ -43,8 +43,7 @@ func main {
 
 	// do qcloud captcha verify
 	captcha := qcloud.NewCaptcha(QcloudCaptchaAid, QcloudCaptchaKey)
-	verifyResult, err := captcha.Verify(Randstr, Ticket, clientIP)
-	if err != nil || verifyResult.Response != 1 {
+	if ok, err := captcha.Verify(Randstr, Ticket, clientIP); err != nil || !ok {
 		log.Println(err)
 		return
 	}

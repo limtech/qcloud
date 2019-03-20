@@ -4,7 +4,9 @@ package qcloud
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"log"
 
 	"github.com/limtech/utils"
 )
@@ -19,10 +21,10 @@ type (
 		Key     string
 		Ticket  string
 		Randstr string
-		UserIp  string
+		UserIP  string
 	}
 	CaptchaVerifyResult struct {
-		Response  int    `json:"response"`   // 1:验证成功，0:验证失败，100:AppSecretKey参数校验错误[required]
+		Response  string `json:"response"`   // 1:验证成功，0:验证失败，100:AppSecretKey参数校验错误[required]
 		EvilLevel string `json:"evil_level"` // [0,100]，恶意等级[optional]
 		ErrMsg    string `json:"err_msg"`    // err msg 见下表
 	}
@@ -49,19 +51,28 @@ func NewCaptcha(aid, key string) *Captcha {
 	}
 }
 
-func (self *Captcha) Verify(randstr, ticket, ip string) (CaptchaVerifyResult, error) {
+func (self *Captcha) Verify(randstr, ticket, ip string) (bool, error) {
 	self.Randstr = randstr
 	self.Ticket = ticket
-	self.UserIp = ip
-	url := fmt.Sprintf(QCLOUD_CAPTCHA_VERIFY_URL, self.Aid, self.Key, self.Randstr, self.Ticket, self.UserIp)
+	self.UserIP = ip
+	url := fmt.Sprintf(QCLOUD_CAPTCHA_VERIFY_URL, self.Aid, self.Key, self.Ticket, self.Randstr, self.UserIP)
 
 	rs := CaptchaVerifyResult{}
-	// http post
+	// http request
 	content, err := utils.HttpGet(url)
+	log.Println(string(content))
 	if err != nil {
-		return rs, err
+		return false, err
 	}
 
-	err = json.Unmarshal(content, &rs)
-	return rs, err
+	// json decode
+	if err := json.Unmarshal(content, &rs); err != nil {
+		return false, err
+	}
+
+	// response
+	if rs.Response != "1" {
+		return false, errors.New(rs.ErrMsg)
+	}
+	return true, nil
 }
